@@ -1,6 +1,11 @@
 var fileSelected = null;
-var token = "dd58a816e90d7e7e0bf5f86c7da6113d3bf1118bbf6c272235cea572293667ef62f64832ce32af8629c8791d917a99838bc4d376cd35ff7554248cdbeb473c47";
-var domain = 'http://dev-api.uizadev.io/api/private/';
+var token = "<API_publish_key";
+var domain = '<domain_api>';
+var getExtFile = (filename)=>{
+  if(!filename)
+    return '.mp4';
+  return '.'+filename.split('.').pop();
+};
 
 var changeFile = ($event)=>{
   console.log('$event', $event.target.files);
@@ -10,7 +15,6 @@ var changeFile = ($event)=>{
       name : tmp.name,
       body : tmp,
       size : tmp.size,
-      type : "vod", //require
       inputType : 's3-uiza', //require
       url : ""
     };
@@ -28,7 +32,7 @@ var createEntity = ()=>{
       beforeSend: function(request) {
         request.setRequestHeader("Authorization", token);
       },
-      url: domain + "v3/media/entity",
+      url: domain + "api/public/v3/media/entity",
       data: tmpFile,
       success: function(data) {
         return resolve(data);
@@ -41,7 +45,7 @@ var createEntity = ()=>{
 };
 
 var getConfigAws = ()=>{
-  let url = domain + 'v3/admin/app/config/aws';
+  let url = domain + 'api/public/v3/admin/app/config/aws';
   return new Promise((resolve, reject)=>{
     $.ajax({
       type: "GET",
@@ -74,9 +78,9 @@ var uploadAWS = (configAWS, idCreated)=>{
     let bucketInfo = bucketName.split('/');
 
     let paramsUploadAws = {
-        Key:        bucketInfo[1] + '/'+ bucketInfo[2] + '/'+idCreated,
-        Bucket:     bucketInfo[0],
-        Body:       fileSelected.body, //file stream
+      Key:        bucketInfo[1] + '/'+ bucketInfo[2] + '/s3+uiza+'+idCreated+getExtFile(fileSelected.name),
+      Bucket:     bucketInfo[0],
+      Body:       fileSelected.body, //file stream
     };
     console.log('paramsUploadAws',paramsUploadAws);
     s3.upload(paramsUploadAws, (error, result) => {
@@ -98,7 +102,7 @@ var updateEntity = (idCreated, process='error', progress = 0)=>{
       beforeSend: function(request) {
         request.setRequestHeader("Authorization", token);
       },
-      url: domain + "v3/media/entity",
+      url: domain + "api/public/v3/media/entity",
       data: {
         id: idCreated,
         "uploadDetail": { "process": process, "progress": progress }
@@ -120,7 +124,7 @@ var getEntity = (id)=>{
       beforeSend: function(request) {
         request.setRequestHeader("Authorization", token);
       },
-      url: domain + "v3/media/entity?id="+id,
+      url: domain + "api/public/v3/media/entity?id="+id,
       success: function(data) {
         return resolve(data);
       },
