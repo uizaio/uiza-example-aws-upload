@@ -1,6 +1,8 @@
 var fileSelected = null;
 var token = "<API_publish_key";
 var domain = '<domain_api>';
+//var token = "485c621d7fafe4f6b6e1c303d9edcdbc00d1c22376029b85af5a555249e0f9a526e2274d1cbacf09c709e3273139b8bed37f491511b455dabac217556888ef26";
+//var domain = 'https://nguyenstag01-api.uizadev.io/';
 var getExtFile = (filename)=>{
   if(!filename)
     return '.mp4';
